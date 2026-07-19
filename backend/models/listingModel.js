@@ -4,12 +4,10 @@ const listingSchema = mongoose.Schema(
     title: { type: String, required: true },
     description: { type: String, required: true },
     price: { type: Number, required: true },
-    images: [
-      {
-        url: { type: String, required: true },
-        tags: [String],
-      },
-    ],
+    image: {
+      url: { type: String, required: true },
+      tags: [String],
+    },
     location: {
       type: {
         type: String,
@@ -30,5 +28,5 @@ const listingSchema = mongoose.Schema(
   { timestamps: true }
 );
 
-const Listing = mongoose.model('Listing', listingSchema)
-export default Listing
+const Listing = mongoose.model("Listing", listingSchema);
+export default Listing;
