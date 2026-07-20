@@ -1,5 +1,5 @@
 import mongoose, { Mongoose } from "mongoose";
-const listingSchema = mongoose.Schema(
+const listingSchema =new mongoose.Schema(
   {
     title: { type: String, required: true },
     description: { type: String, required: true },
@@ -7,17 +7,6 @@ const listingSchema = mongoose.Schema(
     image: {
       url: { type: String, required: true },
       tags: [String],
-    },
-    location: {
-      type: {
-        type: String,
-        enum: ["Point"],
-        required: true,
-      },
-      coordinates: {
-        type: [Number], //[longitude, latitude] for MongoDB
-        required: true,
-      },
     },
     host: {
       type: mongoose.Schema.Types.ObjectId,

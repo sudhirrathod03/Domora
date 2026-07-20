@@ -6,7 +6,11 @@ import connectDB from "./config/db.js";
 import listingRoute from "./routes/listingRoutes.js"
 import { json } from "express";
 import userRoute from './routes/userRoutes.js'
+import cookieParser from "cookie-parser";
+
+
 const app = express();
+app.use(cookieParser());
 app.use(cors());
 app.use(json())
 app.use('/', listingRoute)
