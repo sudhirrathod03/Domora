@@ -1,5 +1,4 @@
 import 'dotenv/config';
-
 import express from "express";
 import cors from "cors";
 import connectDB from "./config/db.js";
@@ -7,8 +6,6 @@ import listingRoute from "./routes/listingRoutes.js"
 import { json } from "express";
 import userRoute from './routes/userRoutes.js'
 import cookieParser from "cookie-parser";
-
-
 const app = express();
 app.use(cookieParser());
 app.use(cors());
