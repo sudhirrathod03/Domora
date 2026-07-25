@@ -1,5 +1,5 @@
 import mongoose, { Mongoose } from "mongoose";
-const listingSchema =new mongoose.Schema(
+const listingSchema = new mongoose.Schema(
   {
     title: { type: String, required: true },
     description: { type: String, required: true },
@@ -8,11 +8,11 @@ const listingSchema =new mongoose.Schema(
       url: { type: String, required: true },
       tags: [String],
     },
-    host: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-    },
+    // host: {
+    //   type: mongoose.Schema.Types.ObjectId,
+    //   ref: "User",
+    //   required: true,
+    // },
   },
   { timestamps: true }
 );

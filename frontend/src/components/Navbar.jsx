@@ -14,7 +14,7 @@ function Navbar() {
               to="/"
               className="text-[#E76F2E] font-bold text-2xl tracking-tight hover:scale-105 transition-transform duration-200"
             >
-              StayHub
+              Airbnb
             </Link>
           </div>
 
@@ -29,10 +29,10 @@ function Navbar() {
             </Link>
 
             <Link
-              to="/experiences"
+              to="/explore"
               className="relative group text-gray-700 hover:text-gray-900 font-medium py-1 transition-colors"
             >
-              Experiences
+              Explore
               <span className="absolute left-1/2 bottom-0 h-[2px] w-0 bg-[#E76F2E] -translate-x-1/2 transition-all duration-300 ease-in-out group-hover:w-full"></span>
             </Link>
 
@@ -107,10 +107,10 @@ function Navbar() {
               Home
             </Link>
             <Link
-              to="/experiences"
+              to="/listings"
               className="block px-4 py-3 text-gray-700 font-medium hover:bg-gray-50 hover:text-[#E76F2E] rounded-lg transition-colors"
             >
-              Experiences
+              Explore
             </Link>
             <Link
               to="/about"
