@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import api from "../services/api.js";
-
+import { Link } from "react-router-dom";
 function Home() {
   const [listings, setListings] = useState([]);
 
@@ -8,7 +8,6 @@ function Home() {
     async function fetchListings() {
       try {
         const res = await api.get("/listings");
-        console.log(res.data);
         setListings(res.data);
       } catch (error) {
         console.error("Error fetching listings:", error);
@@ -19,14 +18,12 @@ function Home() {
 
   return (
     <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* Property Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
         {listings.map((listing) => (
-          <div key={listing._id} className="group cursor-pointer">
-            {/* Image Container */}
+         <Link to={`/listings/${listing._id}`} key={listing._id} className="group cursor-pointer block">
             <div className="relative aspect-square overflow-hidden rounded-xl bg-gray-200 mb-3">
               <img
-                src={listing.image?.url}
+                src={listing.image[0]?.url}
                 alt={listing.title}
                 className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
               />
@@ -61,7 +58,7 @@ function Home() {
                 <span className="text-gray-900 text-sm">night</span>
               </div>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
     </div>

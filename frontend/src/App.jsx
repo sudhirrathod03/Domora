@@ -10,6 +10,7 @@ import { Routes, BrowserRouter, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Home from "./pages/Home";
+import ListingDetails from "./pages/ListingDetails";
 function App() {
   const [count, setCount] = useState(0);
 
@@ -23,6 +24,7 @@ function App() {
           <main className="flex-grow flex flex-col">
             <Routes>
             <Route path="/" element={<Home />} /> 
+            <Route path="/listings/:id" element={<ListingDetails />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
             </Routes>
