@@ -39,7 +39,7 @@ function ListingDetails() {
   }
 
   // FIXED: Changed listing.images to listing.image to match your Mongoose schema
-  const images = listing.image || [];
+  const images = listing.images || [];
 
   const nextImage = () => {
     setCurrentImageIndex((prev) => (prev + 1) % images.length);

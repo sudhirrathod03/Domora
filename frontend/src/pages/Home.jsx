@@ -23,7 +23,7 @@ function Home() {
          <Link to={`/listings/${listing._id}`} key={listing._id} className="group cursor-pointer block">
             <div className="relative aspect-square overflow-hidden rounded-xl bg-gray-200 mb-3">
               <img
-                src={listing.image[0]?.url}
+                src={listing.images?.[0]?.url}
                 alt={listing.title}
                 className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
               />

@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Link } from "react-router-dom";
-
+import AuthContext from "../context/AuthContext";
 function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const { user } = useContext(AuthContext);
 
   return (
     <nav className="bg-white border-b border-gray-200 sticky top-0 z-50">
@@ -29,10 +31,10 @@ function Navbar() {
             </Link>
 
             <Link
-              to="/explore"
+              to="/listings/new"
               className="relative group text-gray-700 hover:text-gray-900 font-medium py-1 transition-colors"
             >
-              Explore
+              Add listing
               <span className="absolute left-1/2 bottom-0 h-[2px] w-0 bg-[#E76F2E] -translate-x-1/2 transition-all duration-300 ease-in-out group-hover:w-full"></span>
             </Link>
 
@@ -46,22 +48,26 @@ function Navbar() {
           </div>
 
           {/* Desktop Auth Buttons */}
-          <div className="hidden md:flex items-center space-x-6">
-            <Link
-              to="/login"
-              className="relative group text-gray-700 hover:text-gray-900 font-semibold py-1 transition-colors"
-            >
-              Login
-              <span className="absolute left-1/2 bottom-0 h-[2px] w-0 bg-[#E76F2E] -translate-x-1/2 transition-all duration-300 ease-in-out group-hover:w-full"></span>
-            </Link>
+          {user ? (
+            <h1>{user.name}</h1>
+          ) : (
+            <div className="hidden md:flex items-center space-x-6">
+              <Link
+                to="/login"
+                className="relative group text-gray-700 hover:text-gray-900 font-semibold py-1 transition-colors"
+              >
+                Login
+                <span className="absolute left-1/2 bottom-0 h-[2px] w-0 bg-[#E76F2E] -translate-x-1/2 transition-all duration-300 ease-in-out group-hover:w-full"></span>
+              </Link>
 
-            <Link
-              to="/signup"
-              className="bg-[#E76F2E] text-white px-5 py-2 rounded-full font-semibold hover:bg-[#d65f24] hover:shadow-md hover:-translate-y-0.5 transition-all duration-200"
-            >
-              Sign Up
-            </Link>
-          </div>
+              <Link
+                to="/signup"
+                className="bg-[#E76F2E] text-white px-5 py-2 rounded-full font-semibold hover:bg-[#d65f24] hover:shadow-md hover:-translate-y-0.5 transition-all duration-200"
+              >
+                Sign Up
+              </Link>
+            </div>
+          )}
 
           {/* Mobile Menu Toggle Button */}
           <div className="md:hidden flex items-center">

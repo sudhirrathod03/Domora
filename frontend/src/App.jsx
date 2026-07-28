@@ -11,6 +11,8 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Home from "./pages/Home";
 import ListingDetails from "./pages/ListingDetails";
+import CreateListing from "./pages/CreateListing";
+
 function App() {
   const [count, setCount] = useState(0);
 
@@ -23,8 +25,9 @@ function App() {
           {/* 2. flex-grow takes up all empty space, pushing the footer down */}
           <main className="flex-grow flex flex-col">
             <Routes>
-            <Route path="/" element={<Home />} /> 
-            <Route path="/listings/:id" element={<ListingDetails />} />
+              <Route path="/" element={<Home />} />
+              <Route path="/listings/new" element={<CreateListing />} />
+              <Route path="/listings/:id" element={<ListingDetails />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
             </Routes>

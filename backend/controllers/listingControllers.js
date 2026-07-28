@@ -12,14 +12,14 @@ export const getAllListings = async (req, res) => {
 
 export const createListing = async (req, res) => {
   try {
-    const { title, description, price, image } = req.body;
-    console.log(req.user);
+    const { title, description, price, images } = req.body;
+    console.log(req.body);
     const newListing = await Listing.create({
       title,
       description,
       price,
-      image,
-      host: req.user._id,
+      images,
+      // host: req.user._id,
     });
 
     res.status(201).json({
@@ -54,7 +54,7 @@ export const getListing = async (req, res) => {
 export const updateListing = async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, description, image, price } = req.body;
+    const { title, description, images, price } = req.body;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({
