@@ -19,7 +19,7 @@ export const createListing = async (req, res) => {
       description,
       price,
       images,
-      // host: req.user._id,
+      owner: req.user._id,
     });
 
     res.status(201).json({
@@ -40,7 +40,7 @@ export const getListing = async (req, res) => {
         message: "Invalid listing id",
       });
     }
-    const listing = await Listing.findById(id);
+    const listing = await Listing.findById(id).populate("owner");
     if (!listing) {
       return res.status(404).json({ message: "Listing not found!" });
     }
@@ -66,7 +66,7 @@ export const updateListing = async (req, res) => {
       {
         title,
         description,
-        image,
+        images,
         price,
       },
       {

@@ -5,7 +5,7 @@ const router = express.Router()
 
 router.get("/listings", getAllListings);
 router.get('/listings/:id', getListing)
-router.post('/listings', createListing)
+router.post('/listings', protect, createListing)
 router.put('/listings/:id', protect, updateListing)
 router.delete('/listings/:id', protect, deleteListing)
 export default router

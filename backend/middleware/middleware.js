@@ -8,7 +8,7 @@ export const protect = async (req, res, next) => {
     }
 
     const decode = jwt.verify(token, process.env.JWT_SECRET);
-    console.log("decode", decode);
+
     const user = await User.findById(decode.id).select("-password");
 
     if (!user) {

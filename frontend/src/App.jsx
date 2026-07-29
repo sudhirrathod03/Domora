@@ -3,7 +3,7 @@ import reactLogo from "./assets/react.svg";
 import viteLogo from "./assets/vite.svg";
 import heroImg from "./assets/hero.png";
 import "./App.css";
-import AuthProvider from "./context/AuthContext";
+
 import Signup from "./pages/Signup";
 import Login from "./pages/Login";
 import { Routes, BrowserRouter, Route } from "react-router-dom";
@@ -12,13 +12,14 @@ import Footer from "./components/Footer";
 import Home from "./pages/Home";
 import ListingDetails from "./pages/ListingDetails";
 import CreateListing from "./pages/CreateListing";
+import EditListing from "./pages/EditListing";
 
 function App() {
   const [count, setCount] = useState(0);
 
   return (
     <>
-      <BrowserRouter>
+
         <div className="flex flex-col min-h-screen bg-gray-50">
           <Navbar />
 
@@ -28,6 +29,8 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/listings/new" element={<CreateListing />} />
               <Route path="/listings/:id" element={<ListingDetails />} />
+              <Route path="/listings/:id/edit" element={<EditListing />} />
+
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
             </Routes>
@@ -35,7 +38,7 @@ function App() {
 
           <Footer />
         </div>
-      </BrowserRouter>
+
     </>
   );
 }
