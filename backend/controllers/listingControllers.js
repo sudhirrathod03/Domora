@@ -35,12 +35,22 @@ export const createListing = async (req, res) => {
 export const getListing = async (req, res) => {
   try {
     const { id } = req.params;
+
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({
         message: "Invalid listing id",
       });
     }
-    const listing = await Listing.findById(id).populate("owner");
+
+    const listing = await Listing.findById(id)
+      .populate("owner") // populates the user who created the listing
+      .populate({
+        path: "reviews", // populates the reviews array
+        populate: {
+          path: "author", // populates the user who wrote each review
+        },
+      });
+
     if (!listing) {
       return res.status(404).json({ message: "Listing not found!" });
     }

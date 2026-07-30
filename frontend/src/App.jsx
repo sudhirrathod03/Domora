@@ -20,7 +20,7 @@ function App() {
   return (
     <>
 
-        <div className="flex flex-col min-h-screen bg-gray-50">
+        <div className="flex flex-col min-h-screen bg-[#E0F2FE]">
           <Navbar />
 
           {/* 2. flex-grow takes up all empty space, pushing the footer down */}

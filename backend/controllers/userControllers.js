@@ -1,6 +1,8 @@
 import User from "../models/usersModel.js";
 import bcrypt from "bcrypt";
-
+import mongoose from "mongoose";
+import Review from "../models/reviewModel.js";
+import Listing from "../models/listingModel.js";
 import { generateToken } from "../utils/generateToken.js";
 export const register = async (req, res) => {
   try {
@@ -101,6 +103,41 @@ export const logout = async (req, res) => {
       success: true,
       message: "Logged out successfully",
     });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const deleteUser = async (req, res) => {
+  try {
+    const { id } = req.params; 
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "Invalid user ID" });
+    }
+    const userReviews = await Review.find({ author: id });
+    const reviewIds = userReviews.map(review => review._id);
+
+    if (reviewIds.length > 0) {
+      await Listing.updateMany(
+        { reviews: { $in: reviewIds } },
+        { $pull: { reviews: { $in: reviewIds } } }
+      );
+    }
+
+    await Review.deleteMany({ author: id });
+
+    const deletedUser = await User.findByIdAndDelete(id);
+
+    if (!deletedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json({ 
+      success: true, 
+      message: "User and all their reviews deleted successfully" 
+    });
+
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
