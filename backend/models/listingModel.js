@@ -16,6 +16,19 @@ const listingSchema = new mongoose.Schema(
         ref: "Review",
       },
     ],
+    location: { type: String, required: true },
+    country: { type: String, required: true },
+    geometry: {
+      type: {
+        type: String,
+        enum: ["Point"],
+        default: "Point",
+      },
+      coordinates: {
+        type: [Number], // mapbox expects [longitude, latitude]
+        required: true,
+      },
+    },
   },
   { timestamps: true }
 );
