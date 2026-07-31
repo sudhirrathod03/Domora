@@ -11,7 +11,9 @@ function EditListing() {
     title: '',
     description: '',
     price: '',
-    images: [''] 
+    images: [''] ,
+    location: '', 
+    country: '',
   });
 
   useEffect(() => {
@@ -22,10 +24,12 @@ function EditListing() {
         const existingImageUrls = existingListing.images?.map(img => img.url) || [];
         
         setFormData({
-          title: existingListing.title,
-          description: existingListing.description,
-          price: existingListing.price,
-          images: existingImageUrls.length > 0 ? existingImageUrls : ['']
+          title: existingListing.title || '',
+          description: existingListing.description || '',
+          price: existingListing.price || '',
+          images: existingImageUrls.length > 0 ? existingImageUrls : [''],
+          location: existingListing.location || '', // Fixed: existingListing instead of listing
+          country: existingListing.country || ''    // Fixed: existingListing instead of listing
         });
       } catch (error) {
         console.error("Error fetching listing for edit:", error);
@@ -56,7 +60,9 @@ function EditListing() {
       title: formData.title,
       description: formData.description,
       price: Number(formData.price),
-      images: formData.images.filter(url => url.trim() !== '').map(url => ({ url }))
+      images: formData.images.filter(url => url.trim() !== '').map(url => ({ url })),
+      location: formData.location,
+      country: formData.country,
     };
 
     try {
@@ -89,7 +95,7 @@ function EditListing() {
             required
             value={formData.title}
             onChange={handleChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E76F2E] focus:border-transparent outline-none transition-all"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C2185B] focus:border-transparent outline-none transition-all"
           />
         </div>
 
@@ -101,8 +107,35 @@ function EditListing() {
             rows="4"
             value={formData.description}
             onChange={handleChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E76F2E] focus:border-transparent outline-none transition-all resize-none"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C2185B] focus:border-transparent outline-none transition-all resize-none"
           />
+        </div>
+
+        {/* Added Location and Country inputs */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Location (City, Area)</label>
+            <input 
+              type="text" 
+              name="location"
+              required
+              value={formData.location}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C2185B] focus:border-transparent outline-none transition-all"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Country</label>
+            <input 
+              type="text" 
+              name="country"
+              required
+              value={formData.country}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C2185B] focus:border-transparent outline-none transition-all"
+            />
+          </div>
         </div>
 
         <div>
@@ -114,7 +147,7 @@ function EditListing() {
             min="0"
             value={formData.price}
             onChange={handleChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E76F2E] focus:border-transparent outline-none transition-all"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C2185B] focus:border-transparent outline-none transition-all"
           />
         </div>
 
@@ -129,7 +162,7 @@ function EditListing() {
                 required={index === 0} 
                 value={url}
                 onChange={(e) => handleImageChange(index, e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E76F2E] focus:border-transparent outline-none transition-all"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C2185B] focus:border-transparent outline-none transition-all"
               />
             ))}
           </div>
@@ -137,7 +170,7 @@ function EditListing() {
           <button 
             type="button"
             onClick={addImageField}
-            className="mt-4 text-sm font-medium text-[#E76F2E] hover:text-[#d65f24] transition-colors"
+            className="mt-4 text-sm font-medium text-[#C2185B] hover:text-[#9c1349] transition-colors"
           >
             + Add another image URL
           </button>
@@ -153,7 +186,7 @@ function EditListing() {
           </button>
           <button 
             type="submit"
-            className="w-2/3 bg-[#E76F2E] hover:bg-[#d65f24] text-white font-bold py-3 px-4 rounded-lg transition-colors"
+            className="w-2/3 bg-[#C2185B] hover:bg-[#9c1349] text-white font-bold py-3 px-4 rounded-lg transition-colors"
           >
             Save Changes
           </button>

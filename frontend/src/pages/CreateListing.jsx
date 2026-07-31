@@ -8,6 +8,8 @@ function CreateListing() {
     title: '',
     description: '',
     price: '',
+    location: '',
+    country: '', // Added country
     images: [''] 
   });
 
@@ -32,6 +34,8 @@ function CreateListing() {
       title: formData.title,
       description: formData.description,
       price: Number(formData.price),
+      location: formData.location, // Now sending location to backend
+      country: formData.country,   // Now sending country to backend
       images: formData.images.filter(url => url.trim() !== '').map(url => ({ url }))
     };
 
@@ -45,11 +49,9 @@ function CreateListing() {
   };
 
   return (
-
     <div className="w-full max-w-2xl mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold text-gray-900 mb-8 text-center">Add a New Listing</h1>
       
-      {/* Added w-full here to ensure the form fills the container consistently */}
       <form onSubmit={handleSubmit} className="w-full space-y-6 bg-white p-6 md:p-8 rounded-xl shadow-md border border-gray-200">
         
         <div>
@@ -60,7 +62,7 @@ function CreateListing() {
             required
             value={formData.title}
             onChange={handleChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E76F2E] focus:border-transparent outline-none transition-all"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C2185B] focus:border-transparent outline-none transition-all"
             placeholder="e.g. Modern Glass Villa in Bali"
           />
         </div>
@@ -73,9 +75,37 @@ function CreateListing() {
             rows="4"
             value={formData.description}
             onChange={handleChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E76F2E] focus:border-transparent outline-none transition-all resize-none"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C2185B] focus:border-transparent outline-none transition-all resize-none"
             placeholder="Describe your place..."
           />
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Location (City, Area)</label>
+            <input 
+              type="text" 
+              name="location"
+              required
+              value={formData.location}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C2185B] focus:border-transparent outline-none transition-all"
+              placeholder="e.g. Mumbai, Maharashtra"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Country</label>
+            <input 
+              type="text" 
+              name="country"
+              required
+              value={formData.country}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C2185B] focus:border-transparent outline-none transition-all"
+              placeholder="e.g. India"
+            />
+          </div>
         </div>
 
         <div>
@@ -87,7 +117,7 @@ function CreateListing() {
             min="0"
             value={formData.price}
             onChange={handleChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E76F2E] focus:border-transparent outline-none transition-all"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C2185B] focus:border-transparent outline-none transition-all"
             placeholder="150"
           />
         </div>
@@ -103,7 +133,7 @@ function CreateListing() {
                 required={index === 0} 
                 value={url}
                 onChange={(e) => handleImageChange(index, e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E76F2E] focus:border-transparent outline-none transition-all"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C2185B] focus:border-transparent outline-none transition-all"
                 placeholder="https://..."
               />
             ))}
@@ -112,7 +142,7 @@ function CreateListing() {
           <button 
             type="button"
             onClick={addImageField}
-            className="mt-4 text-sm font-medium text-[#E76F2E] hover:text-[#d65f24] transition-colors"
+            className="mt-4 text-sm font-medium text-[#C2185B] hover:text-[#9c1349] transition-colors"
           >
             + Add another image URL
           </button>
@@ -120,7 +150,7 @@ function CreateListing() {
 
         <button 
           type="submit"
-          className="w-full cursor-pointer bg-[#E76F2E] hover:bg-[#d65f24] text-white font-bold py-3 px-4 rounded-lg transition-colors mt-8"
+          className="w-full cursor-pointer bg-[#C2185B] hover:bg-[#9c1349] text-white font-bold py-3 px-4 rounded-lg transition-colors mt-8"
         >
           Create Listing
         </button>

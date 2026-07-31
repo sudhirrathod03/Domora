@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import api from "../services/api.js";
 import { AuthContext } from "../context/AuthProvider.jsx";
+import ListingMap from "../components/ListingMap.jsx";
 
 function ListingDetails() {
   const { id } = useParams();
@@ -190,6 +191,16 @@ function ListingDetails() {
           </div>
         </div>
       </div>
+
+      <hr className="border-gray-200 mb-12" />
+      {listing.geometry && listing.geometry.coordinates && (
+        <div className="mb-12">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">
+            Where you'll be
+          </h2>
+          <ListingMap coordinates={listing.geometry.coordinates} />
+        </div>
+      )}
 
       <hr className="border-gray-200 mb-12" />
 
