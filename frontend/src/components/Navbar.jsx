@@ -17,7 +17,23 @@ function Navbar() {
               to="/"
               className="text-[#C2185B] font-extrabold text-2xl tracking-tight hover:scale-105 transition-transform duration-300"
             >
-              Airbnb
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 100 100"
+  className="w-10 h-10 text-[#C2185B] hover:scale-105 transition-transform duration-300"
+  fill="none"
+  stroke="currentColor"
+  strokeWidth="6"
+  strokeLinecap="round"
+  strokeLinejoin="round"
+>
+  {/* Main Roof and Walls */}
+  <path d="M 50 15 L 12 45 V 82 C 12 85.3 14.7 88 18 88 H 82 C 85.3 88 88 85.3 88 82 V 45 Z" />
+  {/* Rounded Archway Door */}
+  <path d="M 35 88 V 60 C 35 52 41 47 50 47 C 59 47 65 52 65 60 V 88" />
+  {/* Top Window Accent */}
+  <circle cx="50" cy="32" r="4" fill="currentColor" stroke="none" />
+</svg>
             </Link>
           </div>
 
