@@ -10,12 +10,29 @@ const listingSchema = new mongoose.Schema(
       ref: "User",
     },
 
+    category: {
+      type: String,
+      enum: [
+        "Trending",
+        "Rooms",
+        "Beachfront",
+        "Castles",
+        "Amazing Pools",
+        "Camping",
+        "Farms",
+        "Arctic",
+        "Domes",
+        "Boats",
+      ],
+      required: true,
+    },
     reviews: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Review",
       },
     ],
+
     location: { type: String, required: true },
     country: { type: String, required: true },
     geometry: {

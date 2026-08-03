@@ -10,7 +10,9 @@ async function init() {
     await Listing.insertMany(sampleListings);
 
     console.log("Dummy listings inserted successfully!");
-  } catch (error) {}
+  } catch (error) {
+    console.log(error.message);
+  }
 }
 
 init();

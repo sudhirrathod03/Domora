@@ -15,7 +15,13 @@ function ListingDetails() {
   const [rating, setRating] = useState(5);
 
   const { user } = useContext(AuthContext);
-  const isOwner = user && listing?.owner?._id === user._id;
+  const currentUserId = user?.id || user?._id;
+  const listingOwnerId = listing?.owner?._id || listing?.owner;
+  const isOwner = Boolean(
+    currentUserId && 
+    listingOwnerId && 
+    String(currentUserId) === String(listingOwnerId)
+  );
   const navigate = useNavigate();
 
   const fetchListing = async () => {

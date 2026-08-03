@@ -3,7 +3,14 @@ import Listing from "../models/listingModel.js";
 
 export const getAllListings = async (req, res) => {
   try {
-    const listings = await Listing.find();
+    const {category} = req.query;
+    const dbQuery = {}
+
+    if(category){
+      dbQuery.category = category
+    }
+    const listings = await Listing.find(dbQuery);
+
     res.status(200).json(listings);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -12,7 +19,7 @@ export const getAllListings = async (req, res) => {
 
 export const createListing = async (req, res) => {
   try {
-    const { title, description, price, location, country, images } = req.body;
+    const { title, description, price, location, country, images, category } = req.body;
     const mapboxToken = process.env.MAPBOX_TOKEN;
     const geocodeUrl = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
       location
@@ -39,6 +46,7 @@ export const createListing = async (req, res) => {
       images: images || [],
       geometry,
       owner: req.user._id,
+      category
     });
 
     res.status(201).json({ success: true, listing: newListing });
@@ -50,6 +58,7 @@ export const createListing = async (req, res) => {
 export const getListing = async (req, res) => {
   try {
     const { id } = req.params;
+
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({
