@@ -4,6 +4,11 @@ import api from "../services/api.js";
 import { AuthContext } from "../context/AuthProvider.jsx";
 import ListingMap from "../components/ListingMap.jsx";
 
+// NEW: Calendar imports
+import { DateRange } from "react-date-range";
+import "react-date-range/dist/styles.css"; 
+import "react-date-range/dist/theme/default.css"; 
+
 function ListingDetails() {
   const { id } = useParams();
   const [listing, setListing] = useState(null);
@@ -13,6 +18,18 @@ function ListingDetails() {
   // Review form state
   const [comment, setComment] = useState("");
   const [rating, setRating] = useState(5);
+
+  // NEW: Booking state
+  const [dateRange, setDateRange] = useState([
+    {
+      startDate: new Date(),
+      endDate: new Date(),
+      key: "selection",
+    },
+  ]);
+  const [guests, setGuests] = useState(1);
+  const [disabledDates, setDisabledDates] = useState([]);
+  const [bookingLoading, setBookingLoading] = useState(false);
 
   const { user } = useContext(AuthContext);
   const currentUserId = user?.id || user?._id;
@@ -35,9 +52,73 @@ function ListingDetails() {
     }
   };
 
+  // NEW: Fetch booked dates to disable them on the calendar
+  const fetchBookedDates = async () => {
+    try {
+      const res = await api.get(`/bookings/listing/${id}`);
+      let datesToDisable = [];
+      
+      res.data.forEach((booking) => {
+        const start = new Date(booking.checkIn);
+        const end = new Date(booking.checkOut);
+        const date = new Date(start.getTime());
+
+        while (date <= end) {
+          datesToDisable.push(new Date(date));
+          date.setDate(date.getDate() + 1);
+        }
+      });
+
+      setDisabledDates(datesToDisable);
+    } catch (error) {
+      console.error("Error fetching booked dates:", error);
+    }
+  };
+
   useEffect(() => {
     fetchListing();
+    fetchBookedDates();
   }, [id]);
+
+  // NEW: Dynamic price calculation
+  const startDate = dateRange[0].startDate;
+  const endDate = dateRange[0].endDate;
+  const timeDifference = Math.abs(endDate.getTime() - startDate.getTime());
+  const nightsCount = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
+  const totalPrice = listing ? nightsCount * listing.price : 0;
+
+  // NEW: Submit booking to the backend
+  const handleBooking = async () => {
+    if (!user) {
+      alert("Please log in to book this property.");
+      navigate("/login");
+      return;
+    }
+
+    if (nightsCount === 0) {
+      alert("Please select at least 1 night.");
+      return;
+    }
+
+    try {
+      setBookingLoading(true);
+      await api.post("/bookings", {
+        listingId: id,
+        checkIn: startDate,
+        checkOut: endDate,
+        guests,
+        totalPrice
+      });
+
+      alert("Booking successful!");
+      setDateRange([{ startDate: new Date(), endDate: new Date(), key: "selection" }]);
+      fetchBookedDates(); 
+    } catch (error) {
+      alert(error.response?.data?.message || "Failed to create booking");
+    } finally {
+      setBookingLoading(false);
+    }
+  };
 
   const handleDelete = async () => {
     const confirmDelete = window.confirm(
@@ -58,7 +139,7 @@ function ListingDetails() {
     try {
       await api.post(`/listings/${id}/reviews`, { comment, rating });
       setComment("");
-      setRating(5); // Reset stars to 5
+      setRating(5); 
       fetchListing();
     } catch (error) {
       console.error("Failed to submit review", error);
@@ -73,7 +154,7 @@ function ListingDetails() {
 
     try {
       await api.delete(`/listings/${id}/reviews/${reviewId}`);
-      fetchListing(); // Refresh the page to remove the deleted review
+      fetchListing(); 
     } catch (error) {
       console.error("Failed to delete review", error);
     }
@@ -102,7 +183,7 @@ function ListingDetails() {
     setCurrentImageIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
 
   return (
-    <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* HEADER SECTION */}
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
         <h1 className="text-3xl font-bold text-gray-900">{listing.title}</h1>
@@ -126,7 +207,7 @@ function ListingDetails() {
       </div>
 
       {/* Hero Image Carousel */}
-      <div className="relative w-full h-[250px] sm:h-[350px] md:h-[400px] rounded-2xl overflow-hidden mb-8 bg-gray-200 shadow-sm group">
+      <div className="relative w-full h-[250px] sm:h-[400px] md:h-[500px] rounded-2xl overflow-hidden mb-8 bg-gray-200 shadow-sm group">
         {images.length > 0 && (
           <img
             src={images[currentImageIndex].url}
@@ -177,40 +258,100 @@ function ListingDetails() {
         )}
       </div>
 
-      {/* DETAILS SECTION */}
-      <div className="flex flex-col md:flex-row justify-between items-start gap-8 mb-12">
-        <div className="md:w-2/3">
+
+      <div className="flex flex-col lg:flex-row justify-between items-start gap-12 mb-12">
+        
+
+        <div className="lg:w-2/3 w-full">
           <h2 className="text-xl font-semibold text-gray-900 mb-4">
             About this space
           </h2>
-          <p className="text-gray-700 leading-relaxed whitespace-pre-line">
+          <p className="text-gray-700 leading-relaxed whitespace-pre-line mb-8">
             {listing.description}
           </p>
+
+          <hr className="border-gray-200 mb-8" />
+          
+          {listing.geometry && listing.geometry.coordinates && (
+            <div className="mb-8">
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                Where you'll be
+              </h2>
+              <ListingMap coordinates={listing.geometry.coordinates} />
+            </div>
+          )}
         </div>
 
-        <div className="md:w-1/3 w-full bg-white border border-gray-200 rounded-xl shadow-md p-6 sticky top-24">
-          <div className="flex items-baseline space-x-1">
+
+        <div className="lg:w-1/3 w-full bg-white border border-gray-200 rounded-2xl shadow-xl p-6 sticky top-24 z-10">
+          <div className="flex items-baseline space-x-1 mb-6">
             <span className="text-2xl font-bold text-gray-900">
               ${listing.price}
             </span>
             <span className="text-gray-500">night</span>
           </div>
+
+
+          <div className="border border-gray-200 rounded-xl overflow-hidden mb-4 flex justify-center bg-white">
+            <DateRange
+              ranges={dateRange}
+              onChange={(item) => setDateRange([item.selection])}
+              minDate={new Date()}
+              disabledDates={disabledDates}
+              rangeColors={["#C2185B"]} 
+              showDateDisplay={false}
+              className="w-full max-w-full"
+            />
+          </div>
+
+
+          <div className="border border-gray-300 rounded-lg p-3 mb-4 flex justify-between items-center">
+            <label className="text-sm font-bold text-gray-700">GUESTS</label>
+            <select 
+              value={guests} 
+              onChange={(e) => setGuests(Number(e.target.value))}
+              className="outline-none bg-transparent font-medium text-gray-900 cursor-pointer"
+            >
+              {[1, 2, 3, 4, 5, 6].map(num => (
+                <option key={num} value={num}>{num} {num === 1 ? 'guest' : 'guests'}</option>
+              ))}
+            </select>
+          </div>
+
+
+          {!isOwner ? (
+            <button 
+              onClick={handleBooking}
+              disabled={bookingLoading}
+              className="w-full py-3 bg-[#C2185B] text-white font-bold rounded-lg hover:bg-[#a3124b] transition-colors disabled:opacity-50 cursor-pointer"
+            >
+              {bookingLoading ? "Reserving..." : "Reserve"}
+            </button>
+          ) : (
+            <div className="w-full py-3 bg-gray-100 text-gray-500 text-center font-bold rounded-lg">
+              You own this property
+            </div>
+          )}
+
+
+          {nightsCount > 0 && (
+            <div className="mt-4 pt-4 border-t border-gray-200">
+              <div className="flex justify-between text-gray-600 mb-2">
+                <span>${listing.price} x {nightsCount} nights</span>
+                <span>${totalPrice}</span>
+              </div>
+              <div className="flex justify-between font-bold text-gray-900 text-lg mt-4">
+                <span>Total</span>
+                <span>${totalPrice}</span>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
       <hr className="border-gray-200 mb-12" />
-      {listing.geometry && listing.geometry.coordinates && (
-        <div className="mb-12">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">
-            Where you'll be
-          </h2>
-          <ListingMap coordinates={listing.geometry.coordinates} />
-        </div>
-      )}
 
-      <hr className="border-gray-200 mb-12" />
 
-      {/* REVIEWS SECTION */}
       <div>
         <h2 className="text-2xl font-bold text-gray-900 mb-6">
           Reviews ({listing.reviews?.length || 0})
@@ -273,7 +414,7 @@ function ListingDetails() {
           )}
         </div>
 
-        {/* Create Review Form */}
+
         {user ? (
           <div className="bg-gray-50 p-6 rounded-xl border border-gray-200">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">
@@ -284,7 +425,6 @@ function ListingDetails() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Rating
                 </label>
-                {/* NEW: Interactive Clickable Stars */}
                 <div className="flex space-x-1 text-2xl">
                   {[1, 2, 3, 4, 5].map((star) => (
                     <button

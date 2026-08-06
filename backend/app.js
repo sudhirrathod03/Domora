@@ -5,6 +5,7 @@ import connectDB from "./config/db.js";
 import listingRoute from "./routes/listingRoutes.js";
 import { json } from "express";
 import userRoute from "./routes/userRoutes.js";
+import bookingRoutes from "./routes/bookingRoutes.js";
 import cookieParser from "cookie-parser";
 const app = express();
 app.use(cookieParser());
@@ -19,6 +20,7 @@ app.use(
 
 app.use("/", listingRoute);
 app.use("/", userRoute);
+app.use("/bookings", bookingRoutes)
 const PORT = process.env.PORT;
 
 const startServer = () => {
