@@ -13,6 +13,9 @@ import Home from "./pages/Home";
 import ListingDetails from "./pages/ListingDetails";
 import CreateListing from "./pages/CreateListing";
 import EditListing from "./pages/EditListing";
+import MyTrips from "./pages/MyTrips";
+
+
 
 function App() {
   const [count, setCount] = useState(0);
@@ -30,7 +33,7 @@ function App() {
               <Route path="/listings/new" element={<CreateListing />} />
               <Route path="/listings/:id" element={<ListingDetails />} />
               <Route path="/listings/:id/edit" element={<EditListing />} />
-
+              <Route path="/trips" element={<MyTrips />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
             </Routes>
