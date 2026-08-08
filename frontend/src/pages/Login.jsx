@@ -31,7 +31,7 @@ function Login() {
   }
 
   return (
-    <div className=" flex flex-grow  items-center justify-center bg-gray-50 p-4">
+    <div className=" flex flex-grow  items-center justify-center bg-[#E0F2FE] p-4">
       <div className="w-full max-w-md bg-white p-6 sm:p-8 rounded-xl shadow-md border border-gray-200">
         <h1 className="text-2xl font-bold text-gray-900 mb-2">Login</h1>
         <p className="text-gray-500 text-sm mb-6">
@@ -52,7 +52,7 @@ function Login() {
               name="email"
               id="email"
               onChange={handleChange}
-              className="mt-1 block w-full px-4 py-3 font-normal text-gray-900 placeholder-gray-400 bg-white border border-gray-300 rounded-lg focus:outline-none focus:border-[#E76F2E] focus:ring-1 focus:ring-[#E76F2E] transition-colors"
+              className="mt-1 block w-full px-4 py-3 font-normal text-gray-900 placeholder-gray-400 bg-white border border-gray-300 rounded-lg focus:outline-none focus:border-[#C2185B] focus:ring-1 focus:ring-[#C2185B] transition-colors"
             />
           </label>
 
@@ -69,11 +69,11 @@ function Login() {
               name="password"
               id="password"
               onChange={handleChange}
-              className="mt-1 block w-full px-4 py-3 font-normal text-gray-900 placeholder-gray-400 bg-white border border-gray-300 rounded-lg focus:outline-none focus:border-[#E76F2E] focus:ring-1 focus:ring-[#E76F2E] transition-colors"
+              className="mt-1 block w-full px-4 py-3 font-normal text-gray-900 placeholder-gray-400 bg-white border border-gray-300 rounded-lg focus:outline-none focus:border-[#C2185B] focus:ring-1 focus:ring-[#C2185B] transition-colors"
             />
           </label>
 
-          <button className="w-full bg-[#E76F2E] hover:opacity-90 text-white text-base font-semibold py-3 px-4 rounded-lg transition-opacity">
+          <button className="w-full bg-[#C2185B] cursor-pointer hover:opacity-90 text-white text-base font-semibold py-3 px-4 rounded-lg transition-opacity">
             Submit
           </button>
         </form>

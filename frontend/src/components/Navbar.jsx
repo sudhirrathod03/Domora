@@ -63,7 +63,7 @@ function Navbar() {
 
             <Link
               to="/trips"
-              className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+              className="text-gray-700 hover:text-[#C2185B] font-medium px-4 py-2 rounded-full hover:bg-gray-100 transition-all duration-300"
             >
               Trips
             </Link>
