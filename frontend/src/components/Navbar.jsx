@@ -1,13 +1,25 @@
 import React, { useContext, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthProvider";
 
 function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { user, logout } = useContext(AuthContext);
+  const [searchInput, setSearchInput] = useState("");
+  const navigate = useNavigate();
 
+  const handleSearch = (e) => {
+    try {
+      e.preventDefault();
+      if (searchInput.trim()) {
+        navigate(`/?search=${encodeURIComponent(searchInput.trim())}`);
+      } else {
+
+        navigate(`/`);
+      }
+    } catch (error) {}
+  };
   return (
-    // THE FIX: Changed bg to white/80, increased shadow to shadow-md, and added a subtle gray border
     <nav className="sticky top-4 z-50 mx-auto w-[92%] max-w-7xl rounded-full bg-white/80 backdrop-blur-lg border border-gray-200 shadow-md transition-all duration-300">
       <div className="px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
@@ -42,7 +54,26 @@ function Navbar() {
               </svg>
             </Link>
           </div>
-
+          <form 
+            onSubmit={handleSearch} 
+            className="hidden md:flex items-center border border-gray-300 rounded-full py-2 px-4 shadow-sm hover:shadow-md transition-shadow bg-white"
+          >
+            <input
+              type="text"
+              placeholder="Search destinations..."
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              className="outline-none bg-transparent w-48 lg:w-64 text-sm text-gray-700 placeholder-gray-500 font-medium"
+            />
+            <button 
+              type="submit" 
+              className="bg-[#C2185B] text-white p-2 rounded-full ml-2 hover:bg-[#a3124b] transition-colors cursor-pointer"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+              </svg>
+            </button>
+          </form>
           {/* Desktop Navigation Links */}
           <div className="hidden md:flex space-x-1 items-center">
             <Link

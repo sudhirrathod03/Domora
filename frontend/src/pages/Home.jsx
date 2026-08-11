@@ -7,13 +7,16 @@ function Home() {
   const [listings, setListings] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const categoryQuery = searchParams.get("category"); 
-
+  const searchQuery = searchParams.get("search");
   useEffect(() => {
     async function fetchListings() {
       try {
-        const endpoint = categoryQuery 
-          ? `/listings?category=${categoryQuery}` 
-          : `/listings`;
+        const params = new URLSearchParams();
+        if (categoryQuery) params.append("category", categoryQuery);
+        if (searchQuery) params.append("search", searchQuery);
+        const queryString = params.toString();
+        
+        const endpoint = `/listings${queryString ? `?${queryString}` : ""}`;
           
         const res = await api.get(endpoint);
         setListings(res.data);
@@ -22,7 +25,7 @@ function Home() {
       }
     }
     fetchListings();
-  }, [categoryQuery]);
+  }, [categoryQuery, searchQuery]);
 
   const handleCategorySelect = (label) => {
     if (categoryQuery === label) {

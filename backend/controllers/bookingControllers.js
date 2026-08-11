@@ -13,6 +13,8 @@ export const createBooking = async (req, res) => {
       checkOut: { $gt: new Date(checkIn) },
     });
 
+    console.log(overlappingBookings);
+
     if (overlappingBookings.length > 0) {
       return res.status(400).json({ 
         message: "Sorry, these dates are already booked. Please select different dates." 
