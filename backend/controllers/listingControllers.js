@@ -30,6 +30,10 @@ export const createListing = async (req, res) => {
   try {
     const { title, description, price, location, country, images, category } =
       req.body;
+
+    const uploadedImages = req.files
+      ? req.files.map((file) => ({ url: file.path }))
+      : [];
     const mapboxToken = process.env.MAPBOX_TOKEN;
     const geocodeUrl = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
       location
@@ -53,7 +57,7 @@ export const createListing = async (req, res) => {
       price,
       location,
       country,
-      images: images || [],
+      images: uploadedImages,
       geometry,
       owner: req.user._id,
       category,

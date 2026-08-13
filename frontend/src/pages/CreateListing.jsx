@@ -4,13 +4,14 @@ import api from "../services/api.js";
 
 function CreateListing() {
   const navigate = useNavigate();
+  const [imageFiles, setImageFiles] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
     price: "",
     location: "",
     country: "",
-    images: [""],
     category: "",
   });
 
@@ -31,37 +32,46 @@ function CreateListing() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleImageChange = (index, value) => {
-    const newImages = [...formData.images];
-    newImages[index] = value;
-    setFormData({ ...formData, images: newImages });
-  };
-
-  const addImageField = () => {
-    setFormData({ ...formData, images: [...formData.images, ""] });
+  const handleFileChange = (e) => {
+    // Convert the FileList object to a standard array and cap it at 5 images
+    const selectedFiles = Array.from(e.target.files).slice(0, 5);
+    setImageFiles(selectedFiles);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    if (imageFiles.length === 0) {
+      alert("Please upload at least one image.");
+      return;
+    }
+    
+    setLoading(true);
 
-    const formattedData = {
-      title: formData.title,
-      description: formData.description,
-      price: Number(formData.price),
-      location: formData.location, // Now sending location to backend
-      country: formData.country, // Now sending country to backend,
-      category: formData.category,
-      images: formData.images
-        .filter((url) => url.trim() !== "")
-        .map((url) => ({ url })),
-    };
+    // Create a FormData object to package the text and files together
+    const submitData = new FormData();
+    submitData.append("title", formData.title);
+    submitData.append("description", formData.description);
+    submitData.append("price", Number(formData.price));
+    submitData.append("location", formData.location);
+    submitData.append("country", formData.country);
+    submitData.append("category", formData.category);
+
+    // Append each selected file to the "images" field
+    imageFiles.forEach((file) => {
+      submitData.append("images", file);
+    });
 
     try {
-      const res = await api.post("/listings", formattedData);
+      // Send FormData to the backend. Axios automatically sets the multipart/form-data header
+      const res = await api.post("/listings", submitData);
       console.log("Listing created:", res.data);
       navigate("/");
     } catch (error) {
       console.error("Failed to create listing", error);
+      alert(error.response?.data?.message || "Failed to create listing");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -104,6 +114,7 @@ function CreateListing() {
             placeholder="Describe your place..."
           />
         </div>
+        
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Category
@@ -174,39 +185,34 @@ function CreateListing() {
           />
         </div>
 
+        {/* NEW FILE UPLOAD SECTION */}
         <div className="border-t border-gray-200 pt-6 mt-6">
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Property Photos (URLs)
+            Upload Property Photos (Max 5)
           </label>
-
-          <div className="space-y-3">
-            {formData.images.map((url, index) => (
-              <input
-                key={index}
-                type="url"
-                required={index === 0}
-                value={url}
-                onChange={(e) => handleImageChange(index, e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C2185B] focus:border-transparent outline-none transition-all"
-                placeholder="https://..."
-              />
-            ))}
-          </div>
-
-          <button
-            type="button"
-            onClick={addImageField}
-            className="mt-4 text-sm font-medium text-[#C2185B] hover:text-[#9c1349] transition-colors"
-          >
-            + Add another image URL
-          </button>
+          <input
+            type="file"
+            multiple // Allows selecting multiple files at once
+            accept="image/jpeg, image/png, image/jpg, image/webp"
+            onChange={handleFileChange}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-[#C2185B] bg-white cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-[#C2185B] file:text-white hover:file:bg-[#9c1349]"
+            required
+          />
+          
+          {/* File count preview indicator */}
+          {imageFiles.length > 0 && (
+            <p className="text-sm text-green-600 mt-2 font-medium">
+              {imageFiles.length} file(s) selected for upload.
+            </p>
+          )}
         </div>
 
         <button
           type="submit"
-          className="w-full cursor-pointer bg-[#C2185B] hover:bg-[#9c1349] text-white font-bold py-3 px-4 rounded-lg transition-colors mt-8"
+          disabled={loading}
+          className="w-full cursor-pointer bg-[#C2185B] hover:bg-[#9c1349] disabled:bg-gray-400 text-white font-bold py-3 px-4 rounded-lg transition-colors mt-8"
         >
-          Create Listing
+          {loading ? "Uploading & Creating..." : "Create Listing"}
         </button>
       </form>
     </div>

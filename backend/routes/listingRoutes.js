@@ -1,5 +1,6 @@
 import express from "express";
 import { createReview, deleteReview } from "../controllers/reviewController.js";
+import { upload } from "../cloudinary.js";
 import {
   createListing,
   deleteListing,
@@ -12,7 +13,7 @@ const router = express.Router();
 
 router.get("/listings", getAllListings);
 router.get("/listings/:id", getListing);
-router.post("/listings", protect, createListing);
+router.post("/listings", protect, upload.array("images", 5), createListing);
 router.put("/listings/:id", protect, updateListing);
 router.delete("/listings/:id", protect, deleteListing);
 router.post("/listings/:id/reviews", protect, createReview);
