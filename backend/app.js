@@ -7,6 +7,7 @@ import { json } from "express";
 import userRoute from "./routes/userRoutes.js";
 import bookingRoutes from "./routes/bookingRoutes.js";
 import cookieParser from "cookie-parser";
+import { errorHandler } from "./middleware/middleware.js";
 const app = express();
 app.use(cookieParser());
 
@@ -20,7 +21,7 @@ app.use(
 
 app.use("/", listingRoute);
 app.use("/", userRoute);
-app.use("/bookings", bookingRoutes)
+app.use("/bookings", bookingRoutes);
 const PORT = process.env.PORT;
 
 const startServer = () => {
@@ -30,11 +31,5 @@ const startServer = () => {
   });
 };
 
-app.use((err, req, res, next) => {
-  console.error("Middleware Error:", err);
-  res.status(500).json({
-    message: "A middleware error occurred",
-    error: err.message || err,
-  });
-});
+app.use(errorHandler);
 startServer();
