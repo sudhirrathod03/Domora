@@ -3,11 +3,12 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import api from "../services/api.js";
 import { AuthContext } from "../context/AuthProvider.jsx";
 import ListingMap from "../components/ListingMap.jsx";
+import BookingCard from "../components/BookingCard.jsx";
 
 // NEW: Calendar imports
 import { DateRange } from "react-date-range";
-import "react-date-range/dist/styles.css"; 
-import "react-date-range/dist/theme/default.css"; 
+import "react-date-range/dist/styles.css";
+import "react-date-range/dist/theme/default.css";
 
 function ListingDetails() {
   const { id } = useParams();
@@ -35,9 +36,9 @@ function ListingDetails() {
   const currentUserId = user?.id || user?._id;
   const listingOwnerId = listing?.owner?._id || listing?.owner;
   const isOwner = Boolean(
-    currentUserId && 
-    listingOwnerId && 
-    String(currentUserId) === String(listingOwnerId)
+    currentUserId &&
+      listingOwnerId &&
+      String(currentUserId) === String(listingOwnerId)
   );
   const navigate = useNavigate();
 
@@ -57,7 +58,7 @@ function ListingDetails() {
     try {
       const res = await api.get(`/bookings/listing/${id}`);
       let datesToDisable = [];
-      
+
       res.data.forEach((booking) => {
         const start = new Date(booking.checkIn);
         const end = new Date(booking.checkOut);
@@ -107,12 +108,14 @@ function ListingDetails() {
         checkIn: startDate,
         checkOut: endDate,
         guests,
-        totalPrice
+        totalPrice,
       });
 
       alert("Booking successful!");
-      setDateRange([{ startDate: new Date(), endDate: new Date(), key: "selection" }]);
-      fetchBookedDates(); 
+      setDateRange([
+        { startDate: new Date(), endDate: new Date(), key: "selection" },
+      ]);
+      fetchBookedDates();
     } catch (error) {
       alert(error.response?.data?.message || "Failed to create booking");
     } finally {
@@ -139,7 +142,7 @@ function ListingDetails() {
     try {
       await api.post(`/listings/${id}/reviews`, { comment, rating });
       setComment("");
-      setRating(5); 
+      setRating(5);
       fetchListing();
     } catch (error) {
       console.error("Failed to submit review", error);
@@ -154,7 +157,7 @@ function ListingDetails() {
 
     try {
       await api.delete(`/listings/${id}/reviews/${reviewId}`);
-      fetchListing(); 
+      fetchListing();
     } catch (error) {
       console.error("Failed to delete review", error);
     }
@@ -258,10 +261,7 @@ function ListingDetails() {
         )}
       </div>
 
-
       <div className="flex flex-col lg:flex-row justify-between items-start gap-12 mb-12">
-        
-
         <div className="lg:w-2/3 w-full">
           <h2 className="text-xl font-semibold text-gray-900 mb-4">
             About this space
@@ -271,7 +271,7 @@ function ListingDetails() {
           </p>
 
           <hr className="border-gray-200 mb-8" />
-          
+
           {listing.geometry && listing.geometry.coordinates && (
             <div className="mb-8">
               <h2 className="text-2xl font-bold text-gray-900 mb-4">
@@ -282,75 +282,15 @@ function ListingDetails() {
           )}
         </div>
 
-
-        <div className="lg:w-1/3 w-full bg-white border border-gray-200 rounded-2xl shadow-xl p-6 sticky top-24 z-10">
-          <div className="flex items-baseline space-x-1 mb-6">
-            <span className="text-2xl font-bold text-gray-900">
-              ${listing.price}
-            </span>
-            <span className="text-gray-500">night</span>
-          </div>
-
-
-          <div className="border border-gray-200 rounded-xl overflow-hidden mb-4 flex justify-center bg-white">
-            <DateRange
-              ranges={dateRange}
-              onChange={(item) => setDateRange([item.selection])}
-              minDate={new Date()}
-              disabledDates={disabledDates}
-              rangeColors={["#C2185B"]} 
-              showDateDisplay={false}
-              className="w-full max-w-full"
-            />
-          </div>
-
-
-          <div className="border border-gray-300 rounded-lg p-3 mb-4 flex justify-between items-center">
-            <label className="text-sm font-bold text-gray-700">GUESTS</label>
-            <select 
-              value={guests} 
-              onChange={(e) => setGuests(Number(e.target.value))}
-              className="outline-none bg-transparent font-medium text-gray-900 cursor-pointer"
-            >
-              {[1, 2, 3, 4, 5, 6].map(num => (
-                <option key={num} value={num}>{num} {num === 1 ? 'guest' : 'guests'}</option>
-              ))}
-            </select>
-          </div>
-
-
-          {!isOwner ? (
-            <button 
-              onClick={handleBooking}
-              disabled={bookingLoading}
-              className="w-full py-3 bg-[#C2185B] text-white font-bold rounded-lg hover:bg-[#a3124b] transition-colors disabled:opacity-50 cursor-pointer"
-            >
-              {bookingLoading ? "Reserving..." : "Reserve"}
-            </button>
-          ) : (
-            <div className="w-full py-3 bg-gray-100 text-gray-500 text-center font-bold rounded-lg">
-              You own this property
-            </div>
-          )}
-
-
-          {nightsCount > 0 && (
-            <div className="mt-4 pt-4 border-t border-gray-200">
-              <div className="flex justify-between text-gray-600 mb-2">
-                <span>${listing.price} x {nightsCount} nights</span>
-                <span>${totalPrice}</span>
-              </div>
-              <div className="flex justify-between font-bold text-gray-900 text-lg mt-4">
-                <span>Total</span>
-                <span>${totalPrice}</span>
-              </div>
-            </div>
-          )}
-        </div>
+        <BookingCard
+          listing={listing}
+          user={user}
+          isOwner={isOwner}
+          disabledDates={disabledDates}
+        />
       </div>
 
       <hr className="border-gray-200 mb-12" />
-
 
       <div>
         <h2 className="text-2xl font-bold text-gray-900 mb-6">
@@ -413,7 +353,6 @@ function ListingDetails() {
             </p>
           )}
         </div>
-
 
         {user ? (
           <div className="bg-gray-50 p-6 rounded-xl border border-gray-200">

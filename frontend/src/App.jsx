@@ -14,6 +14,8 @@ import ListingDetails from "./pages/ListingDetails";
 import CreateListing from "./pages/CreateListing";
 import EditListing from "./pages/EditListing";
 import MyTrips from "./pages/MyTrips";
+import Success from "./pages/Success";
+import Cancel from "./pages/Cancel";
 
 
 
@@ -36,6 +38,9 @@ function App() {
               <Route path="/trips" element={<MyTrips />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
+              <Route path="/success" element={<Success />} />
+              <Route path="/cancel" element={<Cancel />} />
+
             </Routes>
           </main>
 

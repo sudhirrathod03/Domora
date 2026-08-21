@@ -34,6 +34,11 @@ const bookingSchema = new mongoose.Schema(
       enum: ["pending", "confirmed", "cancelled"],
       default: "confirmed",
     },
+    stripeSessionId: {
+      type: String,
+      unique: true, 
+      sparse: true, 
+    },
   },
   { timestamps: true }
 );
