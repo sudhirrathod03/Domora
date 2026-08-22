@@ -32,13 +32,18 @@ const bookingSchema = new mongoose.Schema(
     status: {
       type: String,
       enum: ["pending", "confirmed", "cancelled"],
-      default: "confirmed",
+      default: "pending",
     },
     stripeSessionId: {
       type: String,
       unique: true, 
       sparse: true, 
     },
+
+    expiresAt: {
+      type: Date,
+      expires: 0, 
+    }
   },
   { timestamps: true }
 );

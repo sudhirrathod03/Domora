@@ -5,8 +5,6 @@ import { AuthContext } from "../context/AuthProvider.jsx";
 import ListingMap from "../components/ListingMap.jsx";
 import BookingCard from "../components/BookingCard.jsx";
 
-// NEW: Calendar imports
-import { DateRange } from "react-date-range";
 import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
 
@@ -20,17 +18,8 @@ function ListingDetails() {
   const [comment, setComment] = useState("");
   const [rating, setRating] = useState(5);
 
-  // NEW: Booking state
-  const [dateRange, setDateRange] = useState([
-    {
-      startDate: new Date(),
-      endDate: new Date(),
-      key: "selection",
-    },
-  ]);
-  const [guests, setGuests] = useState(1);
   const [disabledDates, setDisabledDates] = useState([]);
-  const [bookingLoading, setBookingLoading] = useState(false);
+
 
   const { user } = useContext(AuthContext);
   const currentUserId = user?.id || user?._id;
@@ -53,7 +42,7 @@ function ListingDetails() {
     }
   };
 
-  // NEW: Fetch booked dates to disable them on the calendar
+  //Fetch booked dates to disable them on the calendar
   const fetchBookedDates = async () => {
     try {
       const res = await api.get(`/bookings/listing/${id}`);
@@ -81,47 +70,6 @@ function ListingDetails() {
     fetchBookedDates();
   }, [id]);
 
-  // NEW: Dynamic price calculation
-  const startDate = dateRange[0].startDate;
-  const endDate = dateRange[0].endDate;
-  const timeDifference = Math.abs(endDate.getTime() - startDate.getTime());
-  const nightsCount = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
-  const totalPrice = listing ? nightsCount * listing.price : 0;
-
-  // NEW: Submit booking to the backend
-  const handleBooking = async () => {
-    if (!user) {
-      alert("Please log in to book this property.");
-      navigate("/login");
-      return;
-    }
-
-    if (nightsCount === 0) {
-      alert("Please select at least 1 night.");
-      return;
-    }
-
-    try {
-      setBookingLoading(true);
-      await api.post("/bookings", {
-        listingId: id,
-        checkIn: startDate,
-        checkOut: endDate,
-        guests,
-        totalPrice,
-      });
-
-      alert("Booking successful!");
-      setDateRange([
-        { startDate: new Date(), endDate: new Date(), key: "selection" },
-      ]);
-      fetchBookedDates();
-    } catch (error) {
-      alert(error.response?.data?.message || "Failed to create booking");
-    } finally {
-      setBookingLoading(false);
-    }
-  };
 
   const handleDelete = async () => {
     const confirmDelete = window.confirm(
@@ -187,7 +135,6 @@ function ListingDetails() {
 
   return (
     <div className="w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* HEADER SECTION */}
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
         <h1 className="text-3xl font-bold text-gray-900">{listing.title}</h1>
 
