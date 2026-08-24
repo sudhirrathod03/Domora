@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import Listing from "../models/listingModel.js";
 import asyncHandler from "../utils/asyncHandler.js";
+import redisClient from "../config/redis.js";
 
 export const getAllListings = asyncHandler(async (req, res) => {
   const { category, search } = req.query;
@@ -71,6 +72,18 @@ export const getListing = asyncHandler(async (req, res) => {
     });
   }
 
+  const cacheKey = `listing:${id}`
+  const cachedListing =await redisClient.get(cacheKey)
+
+  //1. cache hit
+  if(cachedListing){
+
+    console.log("Serving from redis");
+    return res.status(200).json(JSON.parse(cachedListing))
+  }
+
+ //2. cache miss
+  console.log("🗄️ Serving Listing from MongoDB");
   const listing = await Listing.findById(id)
     .populate("owner") // populates the user who created the listing
     .populate({
@@ -83,6 +96,8 @@ export const getListing = asyncHandler(async (req, res) => {
   if (!listing) {
     return res.status(404).json({ message: "Listing not found!" });
   }
+
+  await redisClient.set(cacheKey, JSON.stringify(listing), {EX:3600})
 
   res.status(200).json(listing);
 });

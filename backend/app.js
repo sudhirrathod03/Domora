@@ -10,6 +10,8 @@ import stripeRoute from "./routes/stripeRoute.js";
 import cookieParser from "cookie-parser";
 import { errorHandler } from "./middleware/middleware.js";
 import { stripeWebhook } from "./controllers/stripeController.js";
+import redisClient from "./config/redis.js";
+
 const app = express();
 
 app.post(
