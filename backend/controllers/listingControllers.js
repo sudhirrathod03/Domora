@@ -5,6 +5,13 @@ import redisClient from "../config/redis.js";
 
 export const getAllListings = asyncHandler(async (req, res) => {
   const { category, search } = req.query;
+  const cacheKey = `listings:${JSON.stringify(req.query)}`;
+  const cachedListing = await redisClient.get(cacheKey);
+
+  if (cachedListing) {
+    console.log("serving from REDIS");
+    return res.status(200).json(JSON.parse(cachedListing));
+  }
   let dbQuery = {};
   // Category Filter
   if (category) {
@@ -19,6 +26,8 @@ export const getAllListings = asyncHandler(async (req, res) => {
   }
 
   const listings = await Listing.find(dbQuery).sort({ createdAt: -1 });
+
+  await redisClient.set(cacheKey, JSON.stringify(listings), { EX: 3600 });
   res.status(200).json(listings);
 });
 
@@ -60,6 +69,12 @@ export const createListing = asyncHandler(async (req, res) => {
     category,
   });
 
+  const cacheKey = await redisClient.keys("listings:*");
+  if (cacheKey.length > 0) {
+    console.log("cleared");
+    await redisClient.del(cacheKey);
+  }
+
   res.status(201).json({ success: true, listing: newListing });
 });
 
@@ -72,17 +87,16 @@ export const getListing = asyncHandler(async (req, res) => {
     });
   }
 
-  const cacheKey = `listing:${id}`
-  const cachedListing =await redisClient.get(cacheKey)
+  const cacheKey = `listing:${id}`;
+  const cachedListing = await redisClient.get(cacheKey);
 
   //1. cache hit
-  if(cachedListing){
-
+  if (cachedListing) {
     console.log("Serving from redis");
-    return res.status(200).json(JSON.parse(cachedListing))
+    return res.status(200).json(JSON.parse(cachedListing));
   }
 
- //2. cache miss
+  //2. cache miss
   console.log("🗄️ Serving Listing from MongoDB");
   const listing = await Listing.findById(id)
     .populate("owner") // populates the user who created the listing
@@ -97,7 +111,7 @@ export const getListing = asyncHandler(async (req, res) => {
     return res.status(404).json({ message: "Listing not found!" });
   }
 
-  await redisClient.set(cacheKey, JSON.stringify(listing), {EX:3600})
+  await redisClient.set(cacheKey, JSON.stringify(listing), { EX: 3600 });
 
   res.status(200).json(listing);
 });
@@ -165,7 +179,11 @@ export const deleteListing = asyncHandler(async (req, res) => {
   if (!deletedListing) {
     return res.status(404).json({ message: "Listing not found" });
   }
-
+  await redisClient.del(`listing:${id}`);
+  const cachedKeys = await redisClient.keys("listings:*");
+  if (cachedKeys.length > 0) {
+    await redisClient.del(cachedKeys);
+  }
   res.status(200).json({
     success: true,
     message: "Listing deleted successfully",
