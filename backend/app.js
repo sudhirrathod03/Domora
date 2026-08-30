@@ -11,7 +11,7 @@ import cookieParser from "cookie-parser";
 import { errorHandler } from "./middleware/middleware.js";
 import { stripeWebhook } from "./controllers/stripeController.js";
 import redisClient from "./config/redis.js";
-
+import aiRoute from "./routes/aiRoutes.js"
 const app = express();
 
 app.post(
@@ -33,6 +33,7 @@ app.use("/", listingRoute);
 app.use("/", userRoute);
 app.use("/bookings", bookingRoutes);
 app.use("/", stripeRoute);
+app.use("/",aiRoute)
 const PORT = process.env.PORT;
 
 const startServer = () => {
