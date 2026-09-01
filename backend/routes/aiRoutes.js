@@ -1,6 +1,6 @@
-import { searchListingsWithAI } from "../controllers/aiController.js";
+import { generateListingDetails } from "../controllers/aiController.js";
 import express from "express"
 const router = express.Router()
-router.post("/search/ai", searchListingsWithAI)
+router.post("/generate", generateListingDetails)
 
 export default router

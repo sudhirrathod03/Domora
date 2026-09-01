@@ -1,80 +1,44 @@
 import { GoogleGenAI } from "@google/genai";
 import * as z from "zod";
-import Listing from "../models/listingModel.js";
 import asyncHandler from "../utils/asyncHandler.js";
-import redisClient from "../config/redis.js";
 
 const aiClient = new GoogleGenAI({});
 
-
-const searchJsonSchema = {
+const generateJsonSchema = {
   type: "object",
   properties: {
-    location: {
-      type: "string",
-      description: "The city, state, or region mentioned. Null if none.",
+    title: { 
+      type: "string", 
+      description: "A short, catchy property title (max 50 characters). Do not use quotes." 
     },
-    maxPrice: {
-      type: "integer",
-      description: "The maximum price limit mentioned. Null if none.",
-    },
-    category: {
-      type: "string",
-      description:
-        "The property type or vibe (e.g., Beach, Cabin, City). Null if none.",
-    },
-    guests: {
-      type: "integer",
-      description: "The number of people or guests mentioned. Null if none.",
-    },
+    description: { 
+      type: "string", 
+      description: "A warm, professional 3-paragraph property description highlighting amenities, vibe, and location. Use simple text, no markdown." 
+    }
   },
+  required: ["title", "description"]
 };
 
-const searchSchema = z.fromJSONSchema(searchJsonSchema); // it will double check all the things, like type, data etc...
+const generateSchema = z.fromJSONSchema(generateJsonSchema);
 
-export const searchListingsWithAI = asyncHandler(async (req, res) => {
-  const { prompt } = req.body;
+export const generateListingDetails = asyncHandler(async (req, res) => {
+  const { keywords } = req.body;
 
-  if (!prompt) {
-    return res.status(400).json({ message: "Please provide a search prompt." });
+  if (!keywords) {
+    return res.status(400).json({ message: "Please provide keywords." });
   }
 
   const interaction = await aiClient.interactions.create({
     model: "gemini-3.6-flash",
-    input: `Extract search parameters from this user query: "${prompt}". If a value is missing, return null.`,
+    input: `Act as an expert real estate copywriter. Generate a listing title and description based on these keywords: "${keywords}".`,
     response_format: {
       type: "text",
       mime_type: "application/json",
-      schema: searchJsonSchema,
+      schema: generateJsonSchema,
     },
   });
 
-  const aiResult = searchSchema.parse(JSON.parse(interaction.output_text));
-  console.log("🧠 AI Extracted:", aiResult);
-
-  // 3. Construct the MongoDB Query dynamically
-  let dbQuery = {};
-
-  if (aiResult.location) {
-    dbQuery.location = { $regex: aiResult.location, $options: "i" };
-  }
-  if (aiResult.category) {
-    dbQuery.category = { $regex: aiResult.category, $options: "i" };
-  }
-  if (aiResult.maxPrice) {
-    dbQuery.price = { $lte: aiResult.maxPrice };
-  }
-
-  if (aiResult.guests) {
-    dbQuery.guests = { $gte: aiResult.guests }; 
-  }
-
-
-
-  const listings = await Listing.find(dbQuery).sort({ createdAt: -1 });
-
-  res.status(200).json({
-    parsedIntent: aiResult,
-    results: listings
-  });
+  const aiResult = generateSchema.parse(JSON.parse(interaction.output_text));
+  
+  res.status(200).json(aiResult);
 });
