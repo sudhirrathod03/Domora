@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import Review from "../models/reviewModel.js";
 import Listing from "../models/listingModel.js";
 import asyncHandler from "../utils/asyncHandler.js";
-
+import redisClient from "../config/redis.js";
 export const createReview = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const { comment, rating } = req.body;
@@ -25,7 +25,7 @@ export const createReview = asyncHandler(async (req, res) => {
 
   listing.reviews.push(newReview);
   await listing.save();
-
+  await redisClient.del(`listing:${id}`);
   res.status(201).json({
     success: true,
     message: "Review added successfully",
@@ -51,6 +51,7 @@ export const deleteReview = asyncHandler(async (req, res) => {
   if (!deletedReview) {
     return res.status(404).json({ message: "Review not found" });
   }
+  await redisClient.del(`listing:${id}`);
 
   res.status(200).json({
     success: true,

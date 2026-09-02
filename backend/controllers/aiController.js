@@ -1,44 +1,75 @@
 import { GoogleGenAI } from "@google/genai";
-import * as z from "zod";
+import Listing from "../models/listingModel.js";
 import asyncHandler from "../utils/asyncHandler.js";
+import redisClient from "../config/redis.js";
 
 const aiClient = new GoogleGenAI({});
 
-const generateJsonSchema = {
-  type: "object",
-  properties: {
-    title: { 
-      type: "string", 
-      description: "A short, catchy property title (max 50 characters). Do not use quotes." 
-    },
-    description: { 
-      type: "string", 
-      description: "A warm, professional 3-paragraph property description highlighting amenities, vibe, and location. Use simple text, no markdown." 
-    }
-  },
-  required: ["title", "description"]
-};
+export const summarizeListingReviews = asyncHandler(async (req, res) => {
+  const { id } = req.params;
 
-const generateSchema = z.fromJSONSchema(generateJsonSchema);
-
-export const generateListingDetails = asyncHandler(async (req, res) => {
-  const { keywords } = req.body;
-
-  if (!keywords) {
-    return res.status(400).json({ message: "Please provide keywords." });
+  const listing = await Listing.findById(id).populate("reviews");
+  if (!listing) {
+    return res.status(404).json({ message: "Listing not found" });
   }
 
-  const interaction = await aiClient.interactions.create({
+  const reviews = listing.reviews || [];
+
+  if (reviews.length === 0) {
+    return res.status(200).json({
+      summary: {
+        pros: [],
+        cons: [],
+        idealGuest: "Anyone looking for a fresh stay.",
+        recurringComplaints: [],
+      },
+    });
+  }
+  const cacheKey = `summary:${id}:${reviews.length}`;
+  const cachedSummary = await redisClient.get(cacheKey);
+
+  if (cachedSummary) {
+    console.log("⚡ Serving review summary from Redis");
+    return res.status(200).json({ summary: JSON.parse(cachedSummary) });
+  }
+
+  // 3. Prepare review comments into clean bullet points
+  const reviewTexts = reviews
+    .map((r, idx) => `${idx + 1}. "${r.comment || r.body || ""}"`)
+    .join("\n");
+
+  const prompt = `
+You are analyzing guest reviews for a rental property.
+Reviews:
+${reviewTexts}
+
+Output a single valid JSON object strictly matching this shape:
+{
+  "pros": ["bullet 1", "bullet 2"],
+  "cons": ["bullet 1", "bullet 2"],
+  "idealGuest": "short description of who would enjoy this most",
+  "recurringComplaints": ["complaint 1"]
+}
+`;
+
+  const response = await aiClient.models.generateContent({
     model: "gemini-3.6-flash",
-    input: `Act as an expert real estate copywriter. Generate a listing title and description based on these keywords: "${keywords}".`,
-    response_format: {
-      type: "text",
-      mime_type: "application/json",
-      schema: generateJsonSchema,
+    contents: prompt,
+    config: {
+      responseMimeType: "application/json",
     },
   });
 
-  const aiResult = generateSchema.parse(JSON.parse(interaction.output_text));
-  
-  res.status(200).json(aiResult);
+  let rawText = response.text;
+  if (rawText.startsWith("```")) {
+    rawText = rawText.replace(/```json/gi, "").replace(/```/g, "").trim();
+  }
+
+  const parsedSummary = JSON.parse(rawText);
+
+  await redisClient.set(cacheKey, JSON.stringify(parsedSummary), {
+    EX: 86400,
+  });
+
+  res.status(200).json({ summary: parsedSummary });
 });

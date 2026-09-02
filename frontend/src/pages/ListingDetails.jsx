@@ -4,7 +4,7 @@ import api from "../services/api.js";
 import { AuthContext } from "../context/AuthProvider.jsx";
 import ListingMap from "../components/ListingMap.jsx";
 import BookingCard from "../components/BookingCard.jsx";
-
+import ReviewSummary from "../components/ReviewSummary.jsx";
 import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
 
@@ -19,7 +19,6 @@ function ListingDetails() {
   const [rating, setRating] = useState(5);
 
   const [disabledDates, setDisabledDates] = useState([]);
-
 
   const { user } = useContext(AuthContext);
   const currentUserId = user?.id || user?._id;
@@ -69,7 +68,6 @@ function ListingDetails() {
     fetchListing();
     fetchBookedDates();
   }, [id]);
-
 
   const handleDelete = async () => {
     const confirmDelete = window.confirm(
@@ -243,6 +241,10 @@ function ListingDetails() {
         <h2 className="text-2xl font-bold text-gray-900 mb-6">
           Reviews ({listing.reviews?.length || 0})
         </h2>
+        <ReviewSummary
+          listingId={listing._id}
+          reviewCount={listing.reviews?.length || 0}
+        />
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
           {listing.reviews && listing.reviews.length > 0 ? (
