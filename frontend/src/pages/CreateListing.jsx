@@ -1,15 +1,11 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api.js";
-
+import toast from "react-hot-toast";
 function CreateListing() {
   const navigate = useNavigate();
   const [imageFiles, setImageFiles] = useState([]);
   const [loading, setLoading] = useState(false);
-  
-  // AI Generator state
-  const [keywords, setKeywords] = useState("");
-  const [isGenerating, setIsGenerating] = useState(false);
 
   const [formData, setFormData] = useState({
     title: "",
@@ -38,40 +34,19 @@ function CreateListing() {
   };
 
   const handleFileChange = (e) => {
-    const selectedFiles = Array.from(e.target.files).slice(0, 5);
-    setImageFiles(selectedFiles);
-  };
-
-  // AI Generation Handler
-  const handleMagicWrite = async () => {
-    if (!keywords.trim()) {
-      alert("Please enter a few keywords or details about your place first.");
-      return;
-    }
-
-    setIsGenerating(true);
-    try {
-      const res = await api.post("/listings/generate", { keywords });
-      
-      // Auto-populate the title and description into your existing formData state
-      setFormData((prev) => ({
-        ...prev,
-        title: res.data.title || prev.title,
-        description: res.data.description || prev.description,
-      }));
-    } catch (error) {
-      console.error("AI Generation failed:", error);
-      alert(error.response?.data?.message || "Failed to generate listing details");
-    } finally {
-      setIsGenerating(false);
-    }
+    const newFiles = Array.from(e.target.files);
+    
+    setImageFiles((prevFiles) => {
+      const combinedFiles = [...prevFiles, ...newFiles];
+      return combinedFiles.slice(0, 5);
+    });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     
     if (imageFiles.length === 0) {
-      alert("Please upload at least one image.");
+      toast.error("Please upload at least one image.");
       return;
     }
     
@@ -91,11 +66,11 @@ function CreateListing() {
 
     try {
       const res = await api.post("/listings", submitData);
-      console.log("Listing created:", res.data);
+      toast.success("Listing created successfully!");
       navigate("/");
     } catch (error) {
       console.error("Failed to create listing", error);
-      alert(error.response?.data?.message || "Failed to create listing");
+      toast.error(error.response?.data?.message || "Failed to create listing");
     } finally {
       setLoading(false);
     }
@@ -106,31 +81,6 @@ function CreateListing() {
       <h1 className="text-3xl font-bold text-gray-900 mb-8 text-center">
         Add a New Listing
       </h1>
-
-      {/* AI MAGIC WRITE SECTION */}
-      <div className="mb-6 p-4 bg-gray-50 border border-gray-200 rounded-xl shadow-sm">
-        <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">
-          ✨ AI Listing Assistant
-        </label>
-        <div className="flex flex-col sm:flex-row gap-2">
-          <input
-            type="text"
-            placeholder="e.g. Alibaug villa, 4 bedrooms, infinity pool, sea view, fast wifi"
-            value={keywords}
-            onChange={(e) => setKeywords(e.target.value)}
-            className="flex-1 px-4 py-2 text-sm bg-white border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-[#C2185B]"
-            disabled={isGenerating}
-          />
-          <button
-            type="button"
-            onClick={handleMagicWrite}
-            disabled={isGenerating}
-            className="px-5 py-2 bg-[#C2185B] hover:bg-[#9c1349] disabled:bg-gray-400 text-white text-sm font-semibold rounded-lg transition-colors cursor-pointer whitespace-nowrap"
-          >
-            {isGenerating ? "Generating..." : "Generate Details"}
-          </button>
-        </div>
-      </div>
 
       <form
         onSubmit={handleSubmit}

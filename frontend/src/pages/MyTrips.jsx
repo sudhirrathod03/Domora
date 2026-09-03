@@ -2,6 +2,7 @@ import React, { useEffect, useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../services/api";
 import { AuthContext } from "../context/AuthProvider";
+import toast from "react-hot-toast";
 
 function MyTrips() {
   const [trips, setTrips] = useState([]);
@@ -43,10 +44,10 @@ function MyTrips() {
           trip._id === bookingId ? { ...trip, status: "cancelled" } : trip
         )
       );
-      alert("Reservation cancelled successfully.");
+      toast.error("Reservation cancelled successfully.");
     } catch (error) {
       console.error("Error cancelling trip:", error);
-      alert(error.response?.data?.message || "Failed to cancel trip.");
+      toast.error(error.response?.data?.message || "Failed to cancel trip.");
     }
   };
 

@@ -7,6 +7,7 @@ import BookingCard from "../components/BookingCard.jsx";
 import ReviewSummary from "../components/ReviewSummary.jsx";
 import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
+import toast from "react-hot-toast";
 
 function ListingDetails() {
   const { id } = useParams();
@@ -35,7 +36,6 @@ function ListingDetails() {
       const res = await api.get(`/listings/${id}`);
       setListing(res.data);
     } catch (error) {
-      console.error("Error fetching listing details:", error);
     } finally {
       setLoading(false);
     }
@@ -70,14 +70,11 @@ function ListingDetails() {
   }, [id]);
 
   const handleDelete = async () => {
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete this listing?"
-    );
-    if (!confirmDelete) return;
 
     try {
       await api.delete(`/listings/${id}`);
       navigate("/");
+      toast.success("Listing deleted!")
     } catch (error) {
       console.error(error);
     }
@@ -90,20 +87,19 @@ function ListingDetails() {
       setComment("");
       setRating(5);
       fetchListing();
+      toast.success("Review submited!")
     } catch (error) {
-      console.error("Failed to submit review", error);
+      toast.error("Failed to submit review", error);
     }
   };
 
   const handleDeleteReview = async (reviewId) => {
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete your review?"
-    );
-    if (!confirmDelete) return;
 
     try {
       await api.delete(`/listings/${id}/reviews/${reviewId}`);
+      toast.success("Review deleted!")
       fetchListing();
+      
     } catch (error) {
       console.error("Failed to delete review", error);
     }
@@ -155,7 +151,8 @@ function ListingDetails() {
       </div>
 
       {/* Hero Image Carousel */}
-      <div className="relative w-full h-[250px] sm:h-[400px] md:h-[500px] rounded-2xl overflow-hidden mb-8 bg-gray-200 shadow-sm group">
+    {/* Hero Image Carousel */}
+    <div className="relative w-full h-[250px] sm:h-[400px] md:h-[500px] rounded-2xl overflow-hidden mb-8 bg-gray-200 shadow-sm group">
         {images.length > 0 && (
           <img
             src={images[currentImageIndex].url}
@@ -167,8 +164,9 @@ function ListingDetails() {
         {images.length > 1 && (
           <>
             <button
+              type="button"
               onClick={prevImage}
-              className="absolute left-4 top-1/2 cursor-pointer -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 p-2 rounded-full shadow-md transition-all opacity-0 group-hover:opacity-100"
+              className="absolute left-4 top-1/2 z-10 cursor-pointer -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 p-2 rounded-full shadow-md transition-all sm:opacity-0 sm:group-hover:opacity-100"
             >
               <svg
                 className="w-6 h-6"
@@ -185,8 +183,9 @@ function ListingDetails() {
               </svg>
             </button>
             <button
+              type="button"
               onClick={nextImage}
-              className="absolute right-4 top-1/2 cursor-pointer -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 p-2 rounded-full shadow-md transition-all opacity-0 group-hover:opacity-100"
+              className="absolute right-4 top-1/2 z-10 cursor-pointer -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 p-2 rounded-full shadow-md transition-all sm:opacity-0 sm:group-hover:opacity-100"
             >
               <svg
                 className="w-6 h-6"

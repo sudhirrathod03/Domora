@@ -85,6 +85,7 @@ function EditListing() {
 
     try {
       await api.put(`/listings/${id}`, formattedData);
+      toast.success("Listing updated successfully!");
       navigate(`/listings/${id}`); // Redirect back to details page
     } catch (error) {
       console.error("Failed to update listing", error);
