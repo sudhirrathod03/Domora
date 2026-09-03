@@ -87,7 +87,7 @@ function Home() {
                   </p>
                   <div className="mt-auto flex items-center space-x-1">
                     <span className="font-semibold text-gray-900">
-                      ${listing.price}
+                    &#8377;{listing.price}
                     </span>
                     <span className="text-gray-900 text-sm">night</span>
                   </div>
