@@ -24,7 +24,7 @@ app.use(cookieParser());
 app.use(json());
 app.use(
   cors({
-    origin: ["http://localhost:5173", "https://domora-black.vercel.app/"],
+    origin: ["http://localhost:5173", "https://domora-black.vercel.app"],
     credentials: true,
   })
 );
