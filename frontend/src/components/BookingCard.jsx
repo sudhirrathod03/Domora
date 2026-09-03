@@ -4,6 +4,7 @@ import { DateRange } from "react-date-range";
 import api from "../services/api.js";
 import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
+import toast from "react-hot-toast";
 
 function BookingCard({ listing, user, isOwner, disabledDates }) {
   const navigate = useNavigate();
@@ -33,13 +34,13 @@ function BookingCard({ listing, user, isOwner, disabledDates }) {
 
   const handleBooking = async () => {
     if (!user) {
-      alert("Please log in to book this property.");
+      toast.error("Please log in to book this property.");
       navigate("/login");
       return;
     }
 
     if (nightsCount === 0) {
-      alert("Please select at least 1 night.");
+      toast.error("Please select at least 1 night.");
       return;
     }
 

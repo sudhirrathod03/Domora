@@ -32,8 +32,8 @@ export const createCheckout = asyncHandler(async (req, res) => {
       },
       quantity: nights,
     }],
-    success_url: `http://localhost:5173/success`,
-    cancel_url: `http://localhost:5173/cancel`,
+    success_url: `https://domora-black.vercel.app/success`,
+    cancel_url: `https://domora-black.vercel.app/cancel`,
     // We still pass metadata so the webhook knows what to verify
     metadata: {
       listingId,
