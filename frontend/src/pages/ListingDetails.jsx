@@ -8,7 +8,7 @@ import ReviewSummary from "../components/ReviewSummary.jsx";
 import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
 import toast from "react-hot-toast";
-
+import Loader from "../components/Loader.jsx";
 function ListingDetails() {
   const { id } = useParams();
   const [listing, setListing] = useState(null);
@@ -107,9 +107,7 @@ function ListingDetails() {
 
   if (loading) {
     return (
-      <div className="flex-grow flex items-center justify-center py-20">
-        <div className="text-gray-500 text-lg">Loading...</div>
-      </div>
+<Loader fullScreen={false} />
     );
   }
 

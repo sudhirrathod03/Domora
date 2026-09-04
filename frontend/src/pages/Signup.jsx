@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import api from "../services/api.js";
-
+import { useNavigate } from "react-router-dom";
+import Loader from "../components/Loader.jsx";
 const initialState = {
   name: "",
   email: "",
@@ -9,7 +10,8 @@ const initialState = {
 
 function Signup() {
   const [formData, setFormData] = useState(initialState);
-
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
   function handleChange(e) {
     const { name, value } = e.target;
     setFormData((form) => ({ ...form, [name]: value }));
@@ -18,14 +20,21 @@ function Signup() {
   async function handleSubmit(e) {
     e.preventDefault();
     try {
+      setLoading(true)
       const res = await api.post("/auth/register", formData);
-      console.log(res);
+      navigate("/")
       setFormData(initialState);
+    
     } catch (error) {
       console.log(error.message);
+    } finally {
+      setLoading(false);
     }
   }
 
+  if (loading) {
+    return <Loader />;
+  }
   return (
     <div className=" flex flex-grow  items-center justify-center bg-[#E0F2FE] p-4">
       <div className="w-full max-w-md bg-white p-6 sm:p-8 rounded-xl shadow-md border border-gray-200">

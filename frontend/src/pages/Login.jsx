@@ -2,7 +2,7 @@ import React, { useContext, useState } from "react";
 import api from "../services/api";
 import {AuthContext} from "../context/AuthProvider";
 import { useNavigate } from "react-router-dom";
-
+import Loader from "../components/Loader";
 const initialState = {
   email: "",
   password: "",
@@ -10,6 +10,7 @@ const initialState = {
 
 function Login() {
   const [formData, setFormData] = useState(initialState);
+  const[loading, setLoading] = useState(false)
   const { setUser } = useContext(AuthContext);
   const navigate = useNavigate();
   function handleChange(e) {
@@ -20,6 +21,7 @@ function Login() {
   async function handleSubmit(e) {
     e.preventDefault();
     try {
+      setLoading(true)
       const res = await api.post("/auth/login", formData);
       console.log(res);
       setUser(res.data.user);
@@ -27,7 +29,13 @@ function Login() {
       navigate('/')
     } catch (error) {
       console.log(error.message);
+    }finally{
+      setLoading(false)
     }
+  }
+
+  if (loading) {
+    return <Loader />;
   }
 
   return (

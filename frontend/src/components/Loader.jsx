@@ -22,11 +22,11 @@ function Loader({ fullScreen = true }) {
   }, []);
 
   return (
-    <div
+  <div
       className={`flex flex-col items-center justify-center ${
         fullScreen
           ? "fixed inset-0 z-50 bg-white/90 backdrop-blur-sm"
-          : "w-full py-20"
+          : "w-full flex-grow py-20 bg-transparent" // CHANGED: Added flex-grow and bg-transparent
       }`}
     >
       <div className="relative flex items-center justify-center mb-8">

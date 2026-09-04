@@ -42,7 +42,7 @@ function Home() {
 
   if (loading){
     return(
-  <Loader/>
+<Loader fullScreen={false} />
     )
   }
 
