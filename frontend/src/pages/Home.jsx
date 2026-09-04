@@ -2,9 +2,10 @@ import React, { useEffect, useState } from "react";
 import api from "../services/api.js";
 import { Link, useSearchParams } from "react-router-dom";
 import CategoryFilter from "../components/CategoryFilter";
-
+import Loader from "../components/Loader.jsx";
 function Home() {
   const [listings, setListings] = useState([]);
+  const[loading, setLoading] = useState(true)
   const [searchParams, setSearchParams] = useSearchParams();
   const categoryQuery = searchParams.get("category"); 
   const searchQuery = searchParams.get("search");
@@ -22,6 +23,8 @@ function Home() {
         setListings(res.data);
       } catch (error) {
         console.error("Error fetching listings:", error);
+      }finally{
+        setLoading(false)
       }
     }
     fetchListings();
@@ -35,6 +38,13 @@ function Home() {
       setSearchParams({ category: label });
     }
   };
+
+
+  if (loading){
+    return(
+  <Loader/>
+    )
+  }
 
   return (
     <div className="w-full">
