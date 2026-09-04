@@ -11,7 +11,7 @@ A high-performance, full-stack booking engine engineered with the MERN stack. De
 The application operates on a decoupled client-server architecture, enabling independent scaling and seamless deployment pipelines.
 
 <p align="center">
-  <img src="./assets/architecture.png" alt="DOMORA System Architecture" width="100%">
+  <img src="./assets/architecture.svg" alt="DOMORA System Architecture" width="100%">
 </p>
 
 ### Security & Data Flow
