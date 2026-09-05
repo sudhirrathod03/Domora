@@ -6,7 +6,7 @@ A high-performance, full-stack booking engine engineered with the MERN stack. De
 
 ---
 
-## 🏗 System Architecture
+##  System Architecture
 
 The application operates on a decoupled client-server architecture, enabling independent scaling and seamless deployment pipelines.
 
@@ -22,7 +22,7 @@ The application operates on a decoupled client-server architecture, enabling ind
 
 ## Engineering Highlights
 
-### ⚡ Optimized Frontend Performance
+### Optimized Frontend Performance
 * **Dynamic Code Splitting:** Implemented route-level lazy loading using `React.lazy` and `Suspense`. 
 * **Impact:** Slashed the initial JavaScript payload by **87%** (from 2.3MB down to 300kB), drastically improving Time-to-Interactive (TTI) and First Contentful Paint (FCP).
 
@@ -37,7 +37,7 @@ The application operates on a decoupled client-server architecture, enabling ind
 
 ---
 
-## 🛠 Tech Stack
+##  Tech Stack
 
 | Category | Technologies |
 | :--- | :--- |
